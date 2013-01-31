@@ -29,23 +29,27 @@ def can_connect?(addr, port, timeout=2)
     connected
 end
 
+def parse_json(userData)
+    # This code turns JSON values into facts, but requires very strict JSON fields
+    # Not ready for use yet
+    checked_json = userData.gsub("'", '"')
+    JSON.parse(checked_json).each do |array|
+        key = array[0].dup
+        key.insert(0, "ec2_user-data_")
+        val = array[1].dup
+        Facter.add(key) { setcode { val } }
+    end
+end
+
 def get_user_data()
     begin
         open("http://169.254.169.254/latest/user-data") do |f|
-    rescue OpenURI::HTTPError
-        Facter.add("ec2_user_data") { setcode { "" } }
-    else
-        f.each do |userData|
-            Facter.add("ec2_user_data") { setcode { userData } }
-            # This code turns JSON values into facts, but requires very strict JSON fields
-            #checked_json = userData.gsub("'", '"')
-            #JSON.parse(checked_json).each do |array|
-                #key = array[0].dup
-                #key.insert(0, "ec2_user-data_")
-                #val = array[1].dup
-                #Facter.add(key) { setcode { val } } 
-            #end
+            f.each do |userData|
+                Facter.add("ec2_user_data") { setcode { userData } }
+            end
         end
+    rescue OpenURI::HTTPError
+        Facter.add("ec2_user_data") { setcode { "None" } }
     end
 end
 
