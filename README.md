@@ -7,11 +7,12 @@ puppet-ec2-facts
 ec2_ebs_present.rb
 ==================
 
-* Puppet plugin to determine if an EC2 instance is using EBS volumes.
+* Determines if an EC2 instance is using EBS volumes.
 * Creates a puppet fact (in facter) called "ec2_ebs_present" with a value of "True" or "False".
 
 ec2_user_data.rb
 ================
 
-* Puppet plugin to retrieve the 'user-data' field for EC2 instances.
+* Retrieves the 'user-data' field for EC2 instances.
 * Creates a puppet fact (in facter) called "ec2_user_data" with a string value.
+* If "user-data" is not set, returns the string "None".
