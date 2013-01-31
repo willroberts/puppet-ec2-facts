@@ -43,13 +43,24 @@ end
 
 def get_user_data()
     begin
+        # query ec2 for user-data
         open("http://169.254.169.254/latest/user-data") do |f|
             f.each do |userData|
-                Facter.add("ec2_user_data") { setcode { userData } }
+
+                # attempt to parse json
+                begin
+                    parse_json userData
+
+                # return the full string if that fails
+                rescue
+                    Facter.add("ec2_user-data_string") { setcode { userData } }
+                end
             end
         end
+
     rescue OpenURI::HTTPError
-        Facter.add("ec2_user_data") { setcode { "None" } }
+        #Facter.add("ec2_user-data") { setcode { "" } }
+        Facter.debug "No user-data associated with this host"
     end
 end
 
