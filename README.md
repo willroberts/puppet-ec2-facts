@@ -14,5 +14,7 @@ ec2_user_data.rb
 ================
 
 * Retrieves the 'user-data' field for EC2 instances.
-* Creates a puppet fact (in facter) called "ec2_user_data" with a string value.
-* If "user-data" is not set, returns the string "None".
+* Attempts to parse the user-data string for JSON.
+    * Returns "ec2_user-data_<field name>" facts for each JSON key present
+* If you don't use JSON, returns a "ec2_user-data_string" fact
+* If "user-data" is not set, returns the string "" (puppet will ignore the fact).
