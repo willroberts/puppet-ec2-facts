@@ -17,24 +17,22 @@ ec2_user_data.rb
 * If you don't use JSON, returns a "ec2_user-data_string" fact
 * If "user-data" is not set, returns the string "" (puppet will ignore the fact).
 
-* NEW
-* Supports JSON user-data
+* NEW:
+* Supports JSON user-data.
 * Attempts to parse the user-data string for JSON.
     * Returns "ec2_user-data_KEYNAME" facts for each JSON key present
 * Only supports one level of JSON fields. For example:
-
-* Working example:
-{
+    * Working example: 
+`{
     "key1": "value1",
     "key2": "value2",
     "key3": "value3",
-}
-
-* Non-working example:
-{
+}`
+    * Non-working example:
+`{
     "key1": {
         "key2": "value2",
     }
-}
+}`
 
 * This will compress your puppet fact to "ec2_user-data_key1 => key2value2".
