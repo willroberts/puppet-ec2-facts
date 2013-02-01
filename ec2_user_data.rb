@@ -1,5 +1,4 @@
 #!/usr/bin/ruby
-
 require "json"
 require "open-uri"
 require "socket"
@@ -30,10 +29,8 @@ def can_connect?(addr, port, timeout=2)
 end
 
 def parse_json(userData)
-    # This code turns JSON values into facts, but requires very strict JSON fields
-    # Not ready for use yet
-    checked_json = userData.gsub("'", '"')
-    JSON.parse(checked_json).each do |array|
+    # This code turns JSON values into facts, but strictly requires valid JSON!
+    JSON.parse(userData.dup).each do |array|
         key = array[0].dup
         key.insert(0, "ec2_user-data_")
         val = array[1].dup
@@ -44,22 +41,18 @@ end
 def get_user_data()
     begin
         # query ec2 for user-data
-        open("http://169.254.169.254/latest/user-data") do |f|
-            f.each do |userData|
+        userData = open("http://169.254.169.254/latest/user-data").read()
 
-                # attempt to parse json
-                begin
-                    parse_json userData
+        # attempt to parse json
+        begin
+            parse_json userData
 
-                # return the full string if that fails
-                rescue
-                    Facter.add("ec2_user-data_string") { setcode { userData } }
-                end
-            end
+        # return the full string if that fails
+        rescue
+            Facter.add("ec2_user-data_string") { setcode { userData } }
         end
 
     rescue OpenURI::HTTPError
-        #Facter.add("ec2_user-data") { setcode { "" } }
         Facter.debug "No user-data associated with this host"
     end
 end
